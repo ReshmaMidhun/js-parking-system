@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Confirmation</title>
+    <style>
+        *{
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body{
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container{
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .button{
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            width: 100%;
+            max-width: 300px;
+        }
+        .button:hover{
+            background-color: #45a049;
+        }
+        .description{
+            margin: 20px 0;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+    </style>
+    <script>
+         // Function to get URL parameters
+         function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1]);
+        }
+        // Function to generate and download receipt
+        function generateAndDownloadReceipt() {
+            // Retrieve vehicle and transaction details from URL
+            const vehicleNumber = getUrlParameter('vehicle');
+            const entryTime = getUrlParameter('entry');
+            const exitTime = new Date().toISOString();
+            
+            // Format dates consistently
+            const formatDateTime = (dateString) => {
+                const date = new Date(dateString);
+                 // Check if date is valid
+                 if (isNaN(date.getTime())) {
+                    console.error('Invalid date:', dateString);
+                    return 'Invalid Date';
+                }
+
+                return date.toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+            };
+
+              // Calculate duration
+              const calculateDuration = (startDate) => {
+                const start = new Date(startDate);
+                
+                // Check if start date is valid
+                if (isNaN(start.getTime())) {
+                    console.error('Invalid start date:', startDate);
+                    return 'Unable to calculate';
+                }
+
+                const end = new Date();
+                const diffMs = end - start;
+                
+                // Ensure non-negative duration
+                if (diffMs < 0) {
+                    console.error('Negative duration detected');
+                    return 'Unable to calculate';
+                }
+
+                  
+                const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                return `${hours} hours ${minutes} minutes`;
+            };
+
+            // Calculate duration
+            const duration = calculateDuration(entryTime);
+
+            // Create receipt content
+            const receiptContent = `
+            FREE PARKING RECEIPT
+--------------------
+Vehicle Number: ${vehicleNumber}
+Entry Time: ${formatDateTime(entryTime)}
+Exit Time: ${formatDateTime(exitTime)}
+Duration: ${duration}
+Total Amount: FREE
+Thank you for using our parking service!
+            `;
+
+            // Create a Blob with the receipt content
+            const blob = new Blob([receiptContent], { type: 'text/plain' });
+            
+            // Create a download link
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `free_parking_receipt_${vehicleNumber}_${new Date().toISOString().replace(/:/g, '-')}.txt`;
+            
+            // Trigger download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Automatically trigger receipt download on page load
+        window.onload = generateAndDownloadReceipt;
+                
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Vehicle Checkout Successful</h1>
+        <p class="description">
+            No payment was required.
+            Thank you for using our service, and we look forward to serving you again.</p>
+        <button class="button" onclick="window.location.href='/'">Back to Home</button>
+    </div>
+</body>
+</html>
