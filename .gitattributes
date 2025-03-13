@@ -1,0 +1,22 @@
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+
+# Explicitly declare text files you want to always be normalized and converted
+*.js text
+*.json text
+*.html text
+*.css text
+*.md text
+*.env text
+.txt text
+
+# Declare files that will always have CRLF line endings on Windows
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Declare files that will always have LF line endings
+*.sh text eol=lf
+
+# Treat node_modules as binary to prevent line ending conversions
+node_modules/** binary
+EOL
