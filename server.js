@@ -17,7 +17,9 @@ app.use(express.static(path.join(__dirname)));
 
 // Database connection
 const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
+   // host: process.env.DB_HOST,
+   // Replace MYSQL_PUBLIC_URL with RAILWAY_PRIVATE_DOMAIN in your database connection
+    host: process.env.RAILWAY_PRIVATE_DOMAIN || process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
